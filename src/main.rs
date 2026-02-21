@@ -2,7 +2,7 @@
  *Project: AEFR (AEFR's Eternal Freedom & Rust-rendered)
  * GitHub: https://github.com/OxidizedSchale/AEFR-s-Eternal-Freedom-Rust-rendered
  *
- * 版权所有 (C) 2026 黛 (Dye) & AEFR Contributors
+ * 版权所有 (C) 2026 OxidizedSchale & AEFR Contributors
  *
  * 本程序是自由软件：您可以自由分发和/或修改它。
  * 它遵循由自由软件基金会（Free Software Foundation）发布的
