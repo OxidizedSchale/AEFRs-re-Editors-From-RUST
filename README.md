@@ -6,9 +6,9 @@ AEFR 目前并不是一个为了讨好所有人而设计的复杂应用。它只
 # AEFR's Eternal Freedom & Rust-rendered
 非官方的，粉丝制作的，使用rust制造的，性能强劲的多平台多线程蔚蓝档案二次创作编辑器，不使用游戏引擎，使用eGUI库；支持Linux.Android.MacOS.WIndows
 
-GPL3协议开源，欢迎任何人来帮忙负责开发
-
 现在我们只做到了“一幕”的效果，能更换背景 能导入 5 个骨骼文件，可以“对话”，骨骼文件可以换表情，可以更改背景音乐
+
+GPL3协议开源，欢迎任何人来帮忙负责开发
 
 # 但是，在提供帮助中，必须要遵守以下规则
 技术栈纯洁性：本项目坚持核心业务逻辑与架构 100% 使用 Rust 实现
@@ -73,7 +73,11 @@ GPL3协议开源，欢迎任何人来帮忙负责开发
 UI 组件必须遵循  egui  的即时模式哲学，不接受来自  React  风格的提议
 
 # 💾 获取 AEFR
-AEFR 没有发布 Release 的打算
+AEFR 没有在 windows 平台发布 Release 的打算
+
+因为我们在 .cargo/config.toml 里面已经开了windows平台下（MSVC 与 GNU）target-cpu=native，这意味着 AEFR 在编译时会根据 CPU 的指令集进行优化
+
+性能将会更上一层楼
 
 ​“Release? Real hackers compile from source.”
 
