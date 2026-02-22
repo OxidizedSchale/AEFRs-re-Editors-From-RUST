@@ -44,10 +44,6 @@ android-activity = { version = "0.5", features = ["game-activity"] }
 [target.'cfg(not(target_os = "android"))'.dependencies]
 tokio = { version = "1.37", features = ["full"] }
 
-# 编译配置 (Windows 静态链接，确保无依赖运行)
-[target.x86_64-pc-windows-gnu]
-rustflags = ["-C", "link-args=-static", "-C", "target-feature=+crt-static"]
-
 [profile.release]
 opt-level = 3
 lto = true
