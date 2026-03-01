@@ -194,6 +194,8 @@ pub struct SpineObject {
     pub position: Pos2,               // 屏幕位置
     pub scale: f32,                   // 缩放比例
     skeleton_data: Arc<rusty_spine::SkeletonData>, // 共享骨架数据
+    // 🌟 性能优化：将顶点缓冲直接保存在实例中，实现零分配 (Zero-allocation)
+    world_vertices: Vec<f32>,
 }
 unsafe impl Send for SpineObject {} // 标记为可跨线程安全发送
 
@@ -244,7 +246,9 @@ impl SpineObject {
             texture_id: None, 
             position: Pos2::ZERO, 
             scale: 0.45, 
-            skeleton_data 
+            skeleton_data,
+            // 🌟 性能优化：初始容量设为 2048，足够应对绝大多数 Spine 网格附件，杜绝堆分配碎屑
+            world_vertices: Vec::with_capacity(2048),
         }, color_image, page_name, anim_names))
     }
 
@@ -274,13 +278,17 @@ impl SpineObject {
     }
     
     /// 渲染Spine对象到egui Mesh
-    fn paint(&self, ui: &mut egui::Ui) {
+    // 🌟 性能修复：因为我们要复用 self.world_vertices，这里需要 &mut self
+    fn paint(&mut self, ui: &mut egui::Ui) {
         let tex_id = match self.texture_id { 
             Some(id) => id, 
             None => return 
         };
+        
+        // 🌟 渲染批处理优化 (Draw Call Optimization) 🌟
+        // 对于当前角色，我们在循环外部创建单一的 Mesh。
+        // 将全身所有的插槽（Attachment）合并塞入这同一个 Mesh 中。
         let mut mesh = Mesh::with_texture(tex_id);
-        let mut world_vertices = Vec::with_capacity(1024); // 重用顶点缓冲区
         
         // 遍历所有绘制顺序的插槽
         for slot in self.skeleton.draw_order() {
@@ -292,23 +300,27 @@ impl SpineObject {
             // 处理区域附件（RegionAttachment，普通图片）
             if let Some(region) = attachment.as_region() {
                 unsafe {
-                    if world_vertices.len() < 8 { world_vertices.resize(8, 0.0); }
-                    region.compute_world_vertices(&slot.bone(), &mut world_vertices, 0, 2);
-                    self.push_to_mesh(&mut mesh, &world_vertices[0..8], &region.uvs(), &[0, 1, 2, 2, 3, 0], &*slot, region.color());
+                    // 🌟 内存优化：直接复用结构体内的 buffer
+                    if self.world_vertices.len() < 8 { self.world_vertices.resize(8, 0.0); }
+                    region.compute_world_vertices(&slot.bone(), &mut self.world_vertices, 0, 2);
+                    self.push_to_mesh(&mut mesh, &self.world_vertices[0..8], &region.uvs(), &[0, 1, 2, 2, 3, 0], &*slot, region.color());
                 }
             } 
             // 处理网格附件（MeshAttachment，变形网格）
             else if let Some(mesh_att) = attachment.as_mesh() {
                 unsafe {
                     let len = mesh_att.world_vertices_length() as usize;
-                    if world_vertices.len() < len { world_vertices.resize(len, 0.0); }
-                    mesh_att.compute_world_vertices(&*slot, 0, len as i32, &mut world_vertices, 0, 2);
+                    // 🌟 内存优化：直接复用结构体内的 buffer
+                    if self.world_vertices.len() < len { self.world_vertices.resize(len, 0.0); }
+                    mesh_att.compute_world_vertices(&*slot, 0, len as i32, &mut self.world_vertices, 0, 2);
                     let uvs = std::slice::from_raw_parts(mesh_att.uvs(), len);
                     let tris = std::slice::from_raw_parts(mesh_att.triangles(), mesh_att.triangles_count() as usize);
-                    self.push_to_mesh(&mut mesh, &world_vertices[0..len], uvs, tris, &*slot, mesh_att.color());
+                    self.push_to_mesh(&mut mesh, &self.world_vertices[0..len], uvs, tris, &*slot, mesh_att.color());
                 }
             }
         }
+        
+        // 🌟 整个角色的 Mesh 只有在此处调用一次 add，强制要求 UI 后端用 1 个 Draw Call 渲染完整角色！
         ui.painter().add(Shape::mesh(mesh));
     }
     
@@ -434,7 +446,7 @@ impl AefrApp {
                    });
                 }
             }
-        } else if cmd_lower.starts_with("anim ") { // anim [槽位][动画名] [循环]
+        } else if cmd_lower.starts_with("anim ") { // anim [槽位][动画名][循环]
             let parts: Vec<&str> = input_trimmed.split_whitespace().collect();
             if parts.len() >= 2 {
                 if let Ok(idx) = parts[1].parse::<usize>() {
@@ -449,7 +461,7 @@ impl AefrApp {
             }
         } else if cmd_lower.starts_with("bgm ") { // bgm[路径]
              let _ = tx.send(AppCommand::PlayBgm(input_trimmed[4..].trim().replace("\"", "")));
-        } else if cmd_lower.starts_with("se ") { // se [路径]
+        } else if cmd_lower.starts_with("se ") { // se[路径]
              let _ = tx.send(AppCommand::PlaySe(input_trimmed[3..].trim().replace("\"", "")));
         } else if cmd_lower == "stop" { // stop
              let _ = tx.send(AppCommand::StopBgm);
@@ -654,8 +666,8 @@ impl eframe::App for AefrApp {
                     );
                 }
                 
-                // 绘制所有角色
-                for char in self.characters.iter().flatten() { 
+                // 🌟 绘制所有角色 (已修复为获取 &mut 引用，配合顶点的零分配重用)
+                for char in self.characters.iter_mut().flatten() { 
                     char.paint(ui); 
                 }
                 
@@ -779,18 +791,17 @@ fn draw_ba_dialogue(ui: &mut egui::Ui, screen: Rect, name: &str, affiliation: &s
         Stroke::new(1.5, Color32::from_rgb(100, 120, 150))
     );
 
-    // 绘制说话者姓名和所属
+    // 🌟 绘制说话者姓名和所属 (已集成精确对齐优化)
     if !name.is_empty() {
         let n_size = (box_h * 0.16).clamp(22.0, 30.0);
         
-        // 1. 先生成 Galley 拿到实际渲染高度，再决定坐标
+        // 先生成 Galley 拿到实际渲染高度，再决定坐标
         let n_gal = ui.painter().layout_no_wrap(name.into(), egui::FontId::proportional(n_size), Color32::WHITE);
         let n_width = n_gal.rect.width();
         let n_height = n_gal.rect.height();
 
-        // 🌟 修复点 1：位置不再从顶部往下算，而是【依托分割线往上推算】
-        // 这样不管什么字体，文字底部永远贴近 line_y
-        let margin_bottom = 4.0; // 距离分割线的固定留白，可微调
+        // 🌟 位置依托分割线往上推算，防止被字体内部留白顶飞
+        let margin_bottom = 4.0; // 距离分割线的固定留白
         let n_pos = Pos2::new(box_rect.left() + pad_x, line_y - n_height - margin_bottom);
 
         if !affiliation.is_empty() {
@@ -802,8 +813,8 @@ fn draw_ba_dialogue(ui: &mut egui::Ui, screen: Rect, name: &str, affiliation: &s
             );
             let aff_height = aff_gal.rect.height();
             
-            // 🌟 修复点 2：修复基线对齐
-            let visual_compensation = -3.0; // 如果觉得还偏高就把加大，觉得偏低就减小
+            // 🌟 修复基线对齐：抵消往下压的力道，让两边完美水平
+            let visual_compensation = -3.0; 
             let y_offset = n_height - aff_height + visual_compensation; 
             
             ui.painter().galley(n_pos, n_gal.clone(), Color32::WHITE);
@@ -817,7 +828,7 @@ fn draw_ba_dialogue(ui: &mut egui::Ui, screen: Rect, name: &str, affiliation: &s
         }
     }
     
-    // 🌟 严谨：内容上移，紧贴分割线
+    // 内容上移，紧贴分割线
     ui.painter().text(
         Pos2::new(box_rect.left() + pad_x, line_y + box_h * 0.05), 
         egui::Align2::LEFT_TOP, 
@@ -849,7 +860,7 @@ fn draw_ba_dialogue(ui: &mut egui::Ui, screen: Rect, name: &str, affiliation: &s
 /// 绘制创作者控制面板
 fn draw_creator_panel(ctx: &egui::Context, app: &mut AefrApp) {
     let mut cmd_to_send = None; // 待发送的命令
-    egui::Window::new("创作者面板 - AEFR v1.1.1")
+    egui::Window::new("创作者面板 - AEFR v1.1.3")
         .default_size([500.0, 600.0])
         .show(ctx, |ui| {
             // 🎬 剧本幕数管理
@@ -939,7 +950,7 @@ fn draw_creator_panel(ctx: &egui::Context, app: &mut AefrApp) {
             
             // 资源操作按钮
             ui.horizontal(|ui| {
-                if ui.button("📥 Spine").clicked() {
+                if ui.button("📥 导入立绘").clicked() {
                     if let Some(p) = rfd::FileDialog::new()
                         .add_filter("Atlas", &["atlas"])
                         .pick_file() 
@@ -958,7 +969,7 @@ fn draw_creator_panel(ctx: &egui::Context, app: &mut AefrApp) {
                         cmd_to_send = Some(AppCommand::LoadBackground(p.display().to_string()));
                     }
                 }
-                if ui.add(egui::Button::new("🗑 移除").fill(Color32::from_rgb(150, 40, 40))).clicked() {
+                if ui.add(egui::Button::new("🗑 移除立绘").fill(Color32::from_rgb(150, 40, 40))).clicked() {
                     cmd_to_send = Some(AppCommand::RemoveCharacter(app.selected_slot));
                 }
                 if ui.button("🏃 预览").clicked() { 
@@ -997,18 +1008,18 @@ fn draw_creator_panel(ctx: &egui::Context, app: &mut AefrApp) {
             });
 
             ui.separator();
-            ui.heading("💬 对话 (当前幕)");
+            ui.heading("💬 对话 (当前这一幕)");
             let scene = &mut app.scenario.scenes[app.current_scene_idx];
             
             // 说话者信息
             ui.horizontal(|ui| {
-                ui.label("名:"); 
+                ui.label("名称:"); 
                 ui.add(egui::TextEdit::singleline(&mut scene.speaker_name).desired_width(80.0));
-                ui.label("属:"); 
+                ui.label("所属:"); 
                 ui.add(egui::TextEdit::singleline(&mut scene.speaker_aff).desired_width(80.0));
             });
             
-            // 🌟 TALK 按钮重新回归
+            // TALK 按钮
             ui.add(egui::TextEdit::multiline(&mut scene.dialogue_content).desired_width(f32::INFINITY));
             if ui.button("▶ 发送对话 (TALK)").clicked() {
                 app.sync_scene_to_ui();
