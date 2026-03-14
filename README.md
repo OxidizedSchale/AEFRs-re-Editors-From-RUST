@@ -16,10 +16,14 @@
 # 导览：
 # AEFR 目前并不是一个为了讨好所有人而设计的复杂应用。它只是 1102 行直达底层的 Rust 逻辑所构成的一个内核。在计算机的世界里，最短的路径永远是最无敌的！如果你追求的是平庸，请去用 AA；如果你追求的是极致的自由与性能，欢迎来到 AEFR
 
-# AEFR's Eternal Freedom & Rust-rendered（对的，这就是 AEFR 全名，自递归，意思是“AEFR 即永恒自由与 Rust 渲染”）
+# AEFR's Eternal Freedom & Rust-rendered
 非官方的，粉丝制作的，使用rust制造的，性能强劲的多平台多线程蔚蓝档案二次创作编辑器，不使用游戏引擎，使用eGUI库；支持Linux.Android.MacOS.WIndows
 
 现在我们做到了编辑器的效果，能更换背景 能导入 5 个骨骼文件，可以“对话”，骨骼文件可以换表情，可以更改背景音乐
+
+目前还缺少，线性编辑系统，人物动作，以及弹出图片，场景变换（淡入淡出等），弹出表情
+
+# 欢迎任何有志之士参与AEFR开发
 
 # 开始使用（去 Release 找源码编译或者直接找没有指令集优化的二进制）
 AEFR 采用图形化与指令驱动 (Command-Driven) 的交互方式。
@@ -115,7 +119,7 @@ Android / Termux: 请使用绝对路径，例如 /sdcard/Download/bg.png
 
 所有的操作结果（成功/失败/可用动画列表）都会实时打印在控制台的 Log 区域，请留意查看
 
-# 但是，在提供帮助中，必须要遵守以下规则
+# 但是，在提供帮助构建 AEFR 时，必须要遵守以下规则
 技术栈纯洁性：本项目坚持核心业务逻辑与架构 100% 使用 Rust 实现
 
 原则上拒绝引入任何需要与 C++ 运行时或框架（如 Qt、Unity、Unreal 等）进行复杂交互（JNI/复杂FFI）的 PR，以保持架构的纯粹性和可维护性
@@ -164,7 +168,7 @@ Android / Termux: 请使用绝对路径，例如 /sdcard/Download/bg.png
 
 ​为什么我们坚持“同步阻塞模型”？
 
-​不要向我们推销 Web 开发中那种廉价的“非阻塞异步”概念。在 AEFR 的哲学里，“同步”即是秩序
+​# 不要向我们推销 Web 开发中那种廉价的“非阻塞异步”概念。在 AEFR 的哲学里，“同步”即是秩序
 
 ​拒绝画面撕裂：主线程在 Update 阶段会同步等待计算结果。这是为了保证每一帧的骨骼位置、表情、物理效果在空间上完全对齐
 
@@ -178,9 +182,9 @@ Android / Termux: 请使用绝对路径，例如 /sdcard/Download/bg.png
 UI 组件必须遵循  egui  的即时模式哲学，不接受来自  React  风格的提议
 
 # 💾 获取 AEFR
-并不推荐直接在 Release下载二进制
+推荐直接在 Release下载二进制
 
-因为我们在 .cargo/config.toml 里面已经开了windows平台下（MSVC 与 GNU）target-cpu=native，这意味着 AEFR 在编译时会根据 CPU 的指令集进行优化
+但我们在 .cargo/config.toml 里面已经开了windows平台下（MSVC 与 GNU）target-cpu=native，这意味着 AEFR 在编译时会根据 CPU 的指令集进行优化
 
 性能将会更上一层楼
 
