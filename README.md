@@ -1,6 +1,7 @@
 # GNU's Not Unix : AEFR's Enternal Freedom & Rust_rendered
+受 GNU 启发而来，不是官方的 GNU 项目，正在考虑申请“自由软件目录”
 
-# 我们的 Rust 纯度比 Linux 内核高 99.7%!
+# 我们的 Rust 纯度比 GNU/Linux 内核高 99.7%!
 
 # GNU:AEFR 是一个秉承 GNU 宣言精神的自由软件项目，致力于解放基沃托斯的创作环境！分发软件而不开源，这是没有责任的行为！
 
