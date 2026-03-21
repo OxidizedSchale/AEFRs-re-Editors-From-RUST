@@ -179,12 +179,9 @@ UI 组件必须遵循  egui  的即时模式哲学，不接受来自  React 
 # 💾 获取 AEFR
 推荐直接在 Release下载二进制
 
-但我们在 .cargo/config.toml 里面已经开了windows平台下（MSVC 与 GNU）target-cpu=native，这意味着 AEFR 在编译时会根据 CPU 的指令集进行优化
-
-性能将会更上一层楼
+或者试试自己编译？
 
 ​“Release? Real hackers compile from source.”:-)
-
 # 联系我们：
 作者邮箱：3997101522@qq.com
 QQ群：1054276524
