@@ -100,7 +100,7 @@ fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([1280.0, 720.0]) // 默认窗口大小
-            .with_title("GNU's Not Unix : AEFR's Eternal Freedom & Rust_remdered"),
+            .with_title("GNU's Not Unix : AEFR's Eternal Freedom & Rust_rendered"),
         vsync: true, // 开启垂直同步
         ..Default::default()
     };
