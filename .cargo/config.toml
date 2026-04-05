@@ -1,22 +1,94 @@
 # =============================================================================
-# GNU:AEFR 编译配置（GNU: AEFR compilation configuration）
+# GNU:AEFR 跨平台静态全速编译配置 (GNU:AEFR Universal Static & Fast Build)
+# 核心理念：全平台强制 LLD 提速，全链路静态链接，实现真正的“一处编译，到处运行”。
 # =============================================================================
-# --- 针对 Windows GNU 工具链 (MinGW-w64) ---
-# 适用场景：使用 GCC/MinGW 环境进行编译的用户
+
+# -----------------------------------------------------------------------------
+# 【64位 Windows 核心平台】
+# -----------------------------------------------------------------------------
+
+# 针对 Windows GNU (MinGW-w64)
 [target.x86_64-pc-windows-gnu]
+linker = "rust-lld"              # [全速] 使用 Rust 内置 LLD，彻底摆脱外部 MinGW 依赖，提速 2x-5x
 rustflags = [
-    # [自由] 强制静态链接 C 运行时库与系统库，消除对外部 .dll 的依赖。
-    "-C", "link-args=-static",      
-    
-    # [稳定] 确保 C 运行时 (CRT) 以静态方式集成，实现“一人一剑走天涯”的独立性。
-    "-C", "target-feature=+crt-static" 
+    "-C", "linker-flavor=gnu-lld", # [兼容] 强制 LLD 模拟 GNU 行为，确保指令集识别正确
+    "-C", "link-args=-static",      # [自由] 强制静态链接系统库（libgcc, libpthread 等）
+    "-C", "target-feature=+crt-static" # [稳定] 静态嵌入 C 运行时，解决跨系统分发难题
 ]
 
-# --- 针对 Windows MSVC 工具链 (Microsoft Visual Studio) ---
-# 适用场景：标准的 Windows 开发环境，建议大多数 PC 用户使用
+# 针对 Windows MSVC (Visual Studio 体系)
 [target.x86_64-pc-windows-msvc]
+linker = "rust-lld"              # [全速] 替代传统的 link.exe，大幅减少大型项目的增量链接时间
 rustflags = [
-    # [独立] 开启 MSVC 的 /MT 编译模式，将 VCRuntime 静态嵌入 .exe 文件。
-    # 彻底告别“缺少 msvcp140.dll”等运行报错。
-    "-C", "target-feature=+crt-static", 
+    "-C", "linker-flavor=lld-link", # [兼容] 强制 LLD 模拟 MSVC 行为，完美替代 Visual Studio 工具链
+    "-C", "target-feature=+crt-static" # [独立] 开启 /MT 模式，拒绝动态链接 VCRuntime
+]
+
+# -----------------------------------------------------------------------------
+# 【32位 Windows 兼容平台 (i686)】
+# 适用场景：老旧工控机、XP/Win7 兼容环境
+# -----------------------------------------------------------------------------
+
+[target.i686-pc-windows-gnu]
+linker = "rust-lld"
+rustflags = [
+    "-C", "linker-flavor=gnu-lld",
+    "-C", "link-args=-static",
+    "-C", "target-feature=+crt-static"
+]
+
+[target.i686-pc-windows-msvc]
+linker = "rust-lld"
+rustflags = [
+    "-C", "linker-flavor=lld-link",
+    "-C", "target-feature=+crt-static"
+]
+
+# -----------------------------------------------------------------------------
+# 【ARM64 Windows 现代平台 (aarch64)】
+# 适用场景：Snapdragon X Elite, Surface Pro, Mac 虚拟机
+# -----------------------------------------------------------------------------
+
+[target.aarch64-pc-windows-gnu]
+linker = "rust-lld"
+rustflags = [
+    "-C", "linker-flavor=gnu-lld",
+    "-C", "link-args=-static",
+    "-C", "target-feature=+crt-static"
+]
+
+[target.aarch64-pc-windows-msvc]
+linker = "rust-lld"
+rustflags = [
+    "-C", "linker-flavor=lld-link",
+    "-C", "target-feature=+crt-static"
+]
+
+# -----------------------------------------------------------------------------
+# 【Linux Musl 静态分发平台】
+# 适用场景：服务器、容器、裸机 Linux，无需安装 glibc 即可运行
+# -----------------------------------------------------------------------------
+
+# Linux x86_64 Musl
+[target.x86_64-unknown-linux-musl]
+linker = "rust-lld"
+rustflags = [
+    "-C", "linker-flavor=gnu-lld", # [统一] 在 Linux 上同样使用高性能 LLD
+    "-C", "target-feature=+crt-static" # [孤勇] 真正的完全静态化，生成的二进制文件无任何外部依赖
+]
+
+# Linux i686 Musl (32位老旧 Linux)
+[target.i686-unknown-linux-musl]
+linker = "rust-lld"
+rustflags = [
+    "-C", "linker-flavor=gnu-lld",
+    "-C", "target-feature=+crt-static"
+]
+
+# Linux ARM64 Musl (现代嵌入式/移动端 Linux)
+[target.aarch64-unknown-linux-musl]
+linker = "rust-lld"
+rustflags = [
+    "-C", "linker-flavor=gnu-lld",
+    "-C", "target-feature=+crt-static"
 ]
