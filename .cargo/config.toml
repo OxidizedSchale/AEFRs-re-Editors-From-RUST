@@ -1,15 +1,14 @@
 # =============================================================================
-# GNU:AEFR 跨平台静态全速编译配置 (Zigbuild 优化版)
-# 核心理念：移除了所有手动 Linker 设置，完全交给 cargo-zigbuild 处理。
-# 保留静态链接标志，确保二进制文件在目标系统上实现“零依赖”。
+# GNU:AEFR 跨平台静态全速编译配置 (Zigbuild + GNULLVM 进化版)
+# 核心理念：交叉编译交给 cargo-zigbuild 处理。
 # =============================================================================
 
 # -----------------------------------------------------------------------------
 # 【64位 Windows 核心平台】
 # -----------------------------------------------------------------------------
 
-# 针对 Windows GNU (MinGW-w64)
-[target.x86_64-pc-windows-gnu]
+# 针对 Windows GNULLVM (基于 LLVM 的现代 llvm_MinGwW64)
+[target.x86_64-pc-windows-gnullvm]
 rustflags = [
     "-C", "link-args=-static",      # 强制静态链接系统库
     "-C", "target-feature=+crt-static" # 静态嵌入 C 运行时 (CRT)
@@ -25,7 +24,8 @@ rustflags = [
 # 【32位 Windows 兼容平台 (i686)】
 # -----------------------------------------------------------------------------
 
-[target.i686-pc-windows-gnu]
+# 针对 32位 Windows GNULLVM (现代 SEH 适配)
+[target.i686-pc-windows-gnullvm]
 rustflags = [
     "-C", "link-args=-static",
     "-C", "target-feature=+crt-static"
@@ -35,6 +35,60 @@ rustflags = [
 rustflags = [
     "-C", "target-feature=+crt-static"
 ]
+
+# -----------------------------------------------------------------------------
+# 【ARM64 Windows 现代平台 (aarch64)】
+# -----------------------------------------------------------------------------
+
+# 针对 ARM64 Windows GNULLVM (AEFR 交叉编译的核心目标)
+[target.aarch64-pc-windows-gnullvm]
+rustflags = [
+    "-C", "link-args=-static",
+    "-C", "target-feature=+crt-static"
+]
+
+[target.aarch64-pc-windows-msvc]
+rustflags = [
+    "-C", "target-feature=+crt-static"
+]
+
+# -----------------------------------------------------------------------------
+# 【Linux Musl 静态分发平台】
+# -----------------------------------------------------------------------------
+
+# Linux x86_64 Musl
+[target.x86_64-unknown-linux-musl]
+rustflags = [
+    "-C", "target-feature=+crt-static" # 真正的完全静态化，生成的二进制文件无任何外部依赖
+]
+
+# Linux i686 Musl
+[target.i686-unknown-linux-musl]
+rustflags = [
+    "-C", "target-feature=+crt-static"
+]
+
+# Linux ARM64 Musl
+[target.aarch64-unknown-linux-musl]
+rustflags = [
+    "-C", "target-feature=+crt-static"
+]
+
+# -----------------------------------------------------------------------------
+# 【macOS 苹果 Darwin 平台】
+# -----------------------------------------------------------------------------
+
+# 针对 Apple Silicon (M1/M2/M3 芯片)
+[target.aarch64-apple-darwin]
+rustflags = [
+    "-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup",
+]
+
+# 针对 Intel 芯片 Mac
+[target.x86_64-apple-darwin]
+rustflags = [
+    "-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup",
+]]
 
 # -----------------------------------------------------------------------------
 # 【ARM64 Windows 现代平台 (aarch64)】
