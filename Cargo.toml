@@ -37,9 +37,3 @@ android-activity = { version = "0.5", features = ["game-activity"] }
 # === 将 rfd 设置为仅限桌面端使用 (已移除冗余的 tokio) ===
 [target.'cfg(not(target_os = "android"))'.dependencies]
 rfd = "0.14" # 文件选择器不在 Android 编译
-
-[profile.release]
-opt-level = 3
-lto = true
-codegen-units = 1
-strip = true
