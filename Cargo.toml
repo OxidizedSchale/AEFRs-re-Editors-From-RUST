@@ -1,10 +1,10 @@
 [package]
 name = "GNU-AEFR"
-version = "0.8.2"
+version = "0.8.3"
 edition = "2021"
 authors = ["OxidizedSchale<3997101522@qq.com>"]
 description = "GNU's Not Unix : AEFR's Eternal Freedom & Rust-rendered - A high-performance, open-source editor for Blue Archive fan-content."
-license = "GPL-3.0-only" 
+license = "AGPL-3.0-only" 
 #build = "build.rs"
 
 [lib]
