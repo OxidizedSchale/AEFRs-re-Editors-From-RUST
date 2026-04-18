@@ -3,11 +3,10 @@
  * Copyright (C) 2026 OxidizedSchale & The Executive Committee of GNU: AEFR
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License.
  *
- * SPDX-License-Identifier: GPL-3.0-only
+ * SPDX-License-Identifier: AGPL-3.0-only
  *
  * 
  * GitHub: https://github.com/OxidizedSchale/GNU-AEFR
@@ -16,8 +15,8 @@
  *
  * 本程序是自由软件：您可以自由分发和/或修改它。
  * 它遵循由自由软件基金会（Free Software Foundation）发布的
- * GNU 通用公共许可证（GNU General Public License）第 3 版。
- * 本程序的 git 仓库应带有 GPL3 许可证，请自行查看
+ * GNU Affero 通用公共许可证（GNU Affero General Public License）第 3 版。
+ * 本程序的 git 仓库应带有 AGPL3 许可证，请自行查看
  *
  * ----------------------------------------------------------------------------
  *
