@@ -35,7 +35,7 @@ This project is distributed under, and only under, the **GPL-3.0** License.
 - [x] Import and render up to 5 Spine skeletal animation files simultaneously / 同时导入并渲染 5 个 Spine 骨骼动画文件
 - [x] Support standard Kivotos-style dialogue box rendering / 支持标准的基沃托斯风格对话框渲染
 - [x] Switch skeletal animations (e.g., expressions, actions) in real-time / 实时切换骨骼动画（如表情、动作）
--[x] Asynchronously load and play Background Music (BGM) / 异步加载并播放背景音乐 (BGM)
+- [x] Asynchronously load and play Background Music (BGM) / 异步加载并播放背景音乐 (BGM)
 
 ### 🎯 Roadmap / 未来计划
 - [ ] Linear editing system (Timeline) / 线性编辑系统（时间轴）
@@ -54,7 +54,7 @@ This project is distributed under, and only under, the **GPL-3.0** License.
 > "Release? Real hackers compile from source." ;-)
 
 Head to the[**Releases**](https://github.com/OxidizedSchale/GNU-AEFR/releases) page to download the source code, or grab the pre-compiled binaries for your platform.
-<br>前往[**Releases**](https://github.com/OxidizedSchale/GNU-AEFR/releases) 页面下载源码，或直接获取为你的平台无指令集优化编译好的二进制文件。
+<br>前往[**Releases**](https://github.com/OxidizedSchale/GNU-AEFR/releases) 页面下载源码，或直接获取为你的平台编译好的二进制文件。
 
 GNU:AEFR utilizes an interaction model combining **Graphical User Interface (GUI)** and **Command-Driven** inputs.
 <br>GNU:AEFR 采用 **图形化** 与 **指令驱动 (Command-Driven)** 相结合的交互方式。
