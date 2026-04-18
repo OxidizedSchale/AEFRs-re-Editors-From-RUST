@@ -37,3 +37,33 @@ android-activity = { version = "0.5", features = ["game-activity"] }
 # === 将 rfd 设置为仅限桌面端使用 (已移除冗余的 tokio) ===
 [target.'cfg(not(target_os = "android"))'.dependencies]
 rfd = "0.14" # 文件选择器不在 Android 编译
+
+
+# -----------------------------------------------------------------------------
+# 【通用优化标志 - 根据 profile 自动应用】
+# -----------------------------------------------------------------------------
+[profile.release]
+codegen-units = 1        # 更好的优化
+lto = "thin"             # 链接时优化
+opt-level = 3
+strip = "debuginfo"      # 移除调试信息
+# 注意：panic = "abort" 会禁用栈展开，可能导致内存泄漏
+# 只有在确定不需要捕获 panic 时才启用
+# panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = 2
+incremental = true
+debug-assertions = true  # 开发时启用调试断言
+codegen-units = 256               # 增加并行编译单元，加速编译
+
+[profile.test]
+opt-level = 1
+debug = 1
+debug-assertions = true
+
+[profile.bench]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
