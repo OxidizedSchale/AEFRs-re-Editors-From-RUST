@@ -11,7 +11,9 @@
 ---
 
 ### ​⚖️ License / 许可证
-This project is distributed under, and only under, the **GPL-3.0** License.<br>本项目采用且只采用 **GPL-3.0** 协议发布。
+This project is distributed under, and only under, the **GPL-3.0** License（Under version 0.8.3).<br>本项目采用且只采用 **GPL-3.0** 协议发布。（0.8.3版本之前）
+
+For versions 0.8.3 and later (including it), only the **AGPL-3.0** license is allowed.<br>对于0.8.3以及往后的版本，只能使用 **AGPL-3.0** 许可证。
 
 ---
 
