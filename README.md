@@ -69,7 +69,7 @@ Click the `[CMD]` button in the top-left corner of the interface to open the bui
 
 *   **Load Spine Character / 装填角色**
     *   **Command / 指令**: `LOAD <slot_ID> <.atlas_path>`
-    *   **Desc / 说明**: Loads a character into slots `0`~`4`. Upon success, the console prints the available animation list.<br>将角色加载到 `0`~`4` 号共 5 个槽位，支持自动排版。加载成功后，控制台会打印出该角色可用的动作列表。
+    *   **Desc / 说明**: Loads a character into slots `0` to `4`. Upon success, the console prints the available animation list.<br>将角色加载到 `0` 到 `4` 号共 5 个槽位，支持自动排版。加载成功后，控制台会打印出该角色可用的动作列表。
     *   **Example / 示例**: `LOAD 0 D:\Assets\Shiroko\Shiroko_Home.atlas`
 
 ### 2. Motion / 动作与演出
