@@ -1,11 +1,11 @@
 [package]
 name = "GNU-AEFR"
-version = "0.8.3"
+version = "0.8.4"
 edition = "2021"
-authors = ["OxidizedSchale<3997101522@qq.com>"]
+authors =["OxidizedSchale<3997101522@qq.com>"]
 description = "GNU's Not Unix : AEFR's Eternal Freedom & Rust-rendered - A high-performance, open-source editor for Blue Archive fan-content."
 license = "AGPL-3.0-only" 
-#build = "build.rs"
+# build = "build.rs"
 
 [lib]
 name = "aefr_lib"
@@ -17,7 +17,7 @@ name = "aefr"
 path = "src/main.rs"
 
 [dependencies]
-eframe = { version = "0.27", features = ["wgpu", "persistence", "android-game-activity"] }
+eframe = { version = "0.27", features =["wgpu", "persistence", "android-game-activity"] }
 egui = "0.27"
 egui_extras = { version = "0.27", features = ["all_loaders"] }
 image = { version = "0.25", features = ["jpeg", "png", "webp"] }
@@ -33,11 +33,11 @@ embed-resource = "2.0.0"
 # 安卓特定依赖
 [target.'cfg(target_os = "android")'.dependencies]
 android-activity = { version = "0.5", features = ["game-activity"] }
+jni = "0.21" # 引入 JNI 用于唤起安卓原生文件选择器 (SAF)
 
 # === 将 rfd 设置为仅限桌面端使用 (已移除冗余的 tokio) ===
 [target.'cfg(not(target_os = "android"))'.dependencies]
 rfd = "0.14" # 文件选择器不在 Android 编译
-
 
 # -----------------------------------------------------------------------------
 # 【通用优化标志 - 根据 profile 自动应用】
