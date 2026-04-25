@@ -1,18 +1,13 @@
 # =============================================================================
-# GNU:AEFR 跨平台静态全速编译配置 (支持 Zigbuild 和传统构建)
+# GNU:AEFR 跨平台静态全速编译配置 (消除冲突版)
 # 核心理念：配置与工具链分离，不强制绑定任何特定链接器
 # =============================================================================
 
-# -----------------------------------------------------------------------------
-# 【全局配置】
-# -----------------------------------------------------------------------------
 [net]
 git-fetch-with-cli = true
 retry = 3
 
-# -----------------------------------------------------------------------------
-# 【国内镜像源配置】
-# -----------------------------------------------------------------------------
+# 国内镜像源配置
 [source.crates-io]
 replace-with = 'tuna'
 
@@ -23,122 +18,25 @@ registry = "sparse+https://mirrors.tuna.tsinghua.edu.cn/crates.io-index/"
 registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 
 # -----------------------------------------------------------------------------
-# 【构建工具链配置 - 可选，不强制】
+# 【Windows 平台统筹配置 - 消除 cfg 覆盖冲突】
 # -----------------------------------------------------------------------------
-# 注意：以下配置是可选的，如果使用 zigbuild，这些配置会被 zigbuild 覆盖
-# 如果想使用 zig 链接器，可以取消注释下面的配置，或者通过环境变量设置
-
-# [target.x86_64-unknown-linux-gnu]
-# linker = "zig"  # 可选：使用 zig 作为链接器
-
-# [target.x86_64-pc-windows-gnu]
-# linker = "zig"  # 可选：使用 zig 作为链接器
-
-# [target.x86_64-apple-darwin]
-# linker = "zig"  # 可选：使用 zig 作为链接器
-
-# -----------------------------------------------------------------------------
-# 【平台特定编译标志 - 强制静态链接】
-# 这些配置与链接器无关，适用于任何构建工具
-# -----------------------------------------------------------------------------
-
-# Windows 平台通用配置
-# 注意：这里有一个潜在的覆盖问题，下面的具体配置会覆盖这里的通用配置
 [target.'cfg(target_os = "windows")']
-rustflags = [
-    "-C", "target-feature=+crt-static"  # 静态 CRT
+rustflags =[
+    "-C", "target-feature=+crt-static"
 ]
 
-# Windows GNULLVM 目标
+# 统一为 gnullvm 工具链应用严格的静态连接
 [target.'cfg(all(target_os = "windows", target_env = "gnullvm"))']
-rustflags = [
-    "-C", "link-args=-static",           # 强制完全静态
-    "-C", "target-feature=+crt-static"
-]
-
-# Windows MSVC 目标
-[target.'cfg(all(target_os = "windows", target_env = "msvc"))']
-rustflags = [
-    "-C", "target-feature=+crt-static"
-]
-
-# 具体目标类型（保持向后兼容，防止条件编译不生效）
-[target.x86_64-pc-windows-gnullvm]
-rustflags = [
-    "-C", "link-args=-static",           # 强制完全静态
-    "-C", "target-feature=+crt-static"
-]
-
-[target.i686-pc-windows-gnullvm]
-rustflags = [
+rustflags =[
     "-C", "link-args=-static",
     "-C", "target-feature=+crt-static"
 ]
 
-[target.aarch64-pc-windows-gnullvm]
-rustflags = [
-    "-C", "link-args=-static",
-    "-C", "target-feature=+crt-static"
-]
-
-[target.x86_64-pc-windows-msvc]
-rustflags = [
-    "-C", "target-feature=+crt-static"
-]
-
-[target.i686-pc-windows-msvc]
-rustflags = [
-    "-C", "target-feature=+crt-static"
-]
-
-[target.aarch64-pc-windows-msvc]
-rustflags = [
-    "-C", "target-feature=+crt-static"
-]
-
 # -----------------------------------------------------------------------------
-# 【Linux 平台配置】
-# -----------------------------------------------------------------------------
-# Linux Musl 平台 - 天生静态
-[target.'cfg(target_env = "musl")']
-rustflags = ["-C", "target-feature=+crt-static"]
-
-# 具体 Musl 目标
-[target.x86_64-unknown-linux-musl]
-rustflags = [
-    "-C", "target-feature=+crt-static"
-]
-
-[target.i686-unknown-linux-musl]
-rustflags = [
-    "-C", "target-feature=+crt-static"
-]
-
-[target.aarch64-unknown-linux-musl]
-rustflags = [
-    "-C", "target-feature=+crt-static"
-]
-
-# -----------------------------------------------------------------------------
-# 【macOS 平台】
+# 【macOS 平台配置】
 # -----------------------------------------------------------------------------
 [target.'cfg(target_os = "macos")']
-rustflags = [
-    "-C", "link-arg=-undefined",
-    "-C", "link-arg=dynamic_lookup",  # 解决 macOS 动态库查找
-    "-C", "link-arg=-dead_strip",     # 优化：删除未用代码
-]
-
-# 具体 macOS 目标
-[target.x86_64-apple-darwin]
-rustflags = [
-    "-C", "link-arg=-undefined",
-    "-C", "link-arg=dynamic_lookup",
-    "-C", "link-arg=-dead_strip",
-]
-
-[target.aarch64-apple-darwin]
-rustflags = [
+rustflags =[
     "-C", "link-arg=-undefined",
     "-C", "link-arg=dynamic_lookup",
     "-C", "link-arg=-dead_strip",
