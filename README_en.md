@@ -19,7 +19,7 @@ For versions 0.8.3 and later (including it), only the **AGPL-3.0** license is al
 
 ## 🧭 The Philosophy of GNU:AEFR
 
-> GNU:AEFR is not currently a complex > GNU:AEFR is not currently a complex application designed to please everyone, as it is not yet a complete release. It is simply a high-performance editor instance composed of pure Rust. **In the world of computing, the shortest path is always the most invincible!** If you seek current compatibility and ease of use, please use AA; if you seek ultimate freedom, extreme performance, and community-driven maintenance, welcome to GNU:AEFR.
+> GNU:AEFR is not currently a complex application designed to please everyone, as it is not yet a complete release. It is simply a high-performance editor instance composed of pure Rust. **In the world of computing, the shortest path is always the most invincible!** If you seek current compatibility and ease of use, please use AA; if you seek ultimate freedom, extreme performance, and community-driven maintenance, welcome to GNU:AEFR.
 
 *   **Unofficial & Fan-Made**: A high-performance, multi-platform, multi-threaded *Blue Archive* fan-creation editor crafted entirely in pure Rust.
 *   **No Game Engine**: We do not rely on Unity/Unreal; we drive the graphical interface directly using the lightweight `egui` library.
