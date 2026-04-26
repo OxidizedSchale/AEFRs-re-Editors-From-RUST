@@ -45,7 +45,7 @@
 
 ## 🚀 开始使用
 
-> "发布版本？真正的黑客只用源码编译。" ;-)
+> "Release? Real hackers compile from source." ;-)
 
 前往 [**Releases**](https://github.com/OxidizedSchale/GNU-AEFR/releases) 页面下载源码，或直接获取为你的平台无指令集优化编译好的二进制文件。
 
