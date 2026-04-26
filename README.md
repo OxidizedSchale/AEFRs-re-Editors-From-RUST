@@ -1,4 +1,4 @@
-[English](./README_en.md)
+[English](./README_en.md) | [日本語](./README_jp.md) | [한국어](./README_kr.md)
 
 # GNU's Not Unix : AEFR's Eternal Freedom & Rust-rendered
 
